@@ -1,7 +1,7 @@
 // src/components/PrivateRoute.js
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+import { supabase } from "./supabaseClient";
 
 const PrivateRoute = ({ children }) => {
   // undefined = checking auth, null = no session, object = session present

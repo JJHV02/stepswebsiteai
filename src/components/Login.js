@@ -1,14 +1,14 @@
-// src/components/Login.js
 import React, { useState } from "react";
-import { supabase } from "../supabaseClient";
+import { supabase } from "./supabaseClient";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+
+export default function Login() {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
+  const [isNewUser, setIsNewUser] = useState(false);
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
-  const [isNewUser, setIsNewUser] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,22 +16,30 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    let res;
-    if (isNewUser) {
-      // Supabase sign-up
-      res = await supabase.auth.signUp({ email, password });
-    } else {
-      // Supabase sign-in
-      res = await supabase.auth.signInWithPassword({ email, password });
-    }
+    try {
+      let result;
+      if (isNewUser) {
+        // Registro de usuario
+        result = await supabase.auth.signUp({ email, password });
+        if (result.error) throw result.error;
+        // Opcional: notificar al usuario que revise su correo
+        setLoading(false);
+        return;
+      }
 
-    setLoading(false);
+      // Login de usuario
+      result = await supabase.auth.signInWithPassword({ email, password });
+      if (result.error) throw result.error;
 
-    if (res.error) {
-      setError(res.error.message);
-    } else {
-      // On login or on confirmation-link sent for signup:
-      navigate("/ai-profile"); 
+      // Si llegó aquí, autenticación exitosa
+      console.log("✅ Usuario logueado:", result.data.user);
+
+      // Redirige a la página protegida /ai-profile
+      navigate("/ai-profile");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,6 +98,4 @@ const Login = () => {
       {error && <p className="mt-2 text-red-500">{error}</p>}
     </div>
   );
-};
-
-export default Login;
+}

@@ -14,7 +14,7 @@ import Success from './phases/Success';
 
 // Components
 import ProfileRecommendations from './Components/profileRecommendations';
-import AIProfile from './AIProfile';
+import AIProfile from './Components/AIProfile';
 import PrivateRoute from './Components/PrivateRoute';
 import Login from './Components/Login';
 
