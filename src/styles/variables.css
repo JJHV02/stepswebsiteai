@@ -1,0 +1,19 @@
+:root {
+    /* Color Palette */
+    --brand-blue: #0052cc;
+    --brand-green: #00c49f;
+    --text-dark: #333;
+    --text-light: #fff;
+    --bg-light: #f9f9f9;
+  
+    /* Typography */
+    --font-sans: 'Inter', sans-serif;
+    --font-heading: 'Poppins', sans-serif;
+  
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 32px;
+  }
+  

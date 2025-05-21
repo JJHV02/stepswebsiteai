@@ -1,0 +1,26 @@
+/* src/styles/phase.css */
+.phase {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 16px auto;
+  max-width: 600px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.phase h1 {
+  color: #003366;
+  margin-bottom: 16px;
+}
+
+.phase h2,
+.phase h3 {
+  color: #0055aa;
+  margin-top: 12px;
+}
+
+.phase ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+  
