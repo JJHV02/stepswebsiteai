@@ -1,6 +1,6 @@
 // src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
 // Layout
 import Layout from './Components/Layout';
@@ -14,13 +14,15 @@ import Success from './phases/Success';
 
 // Components
 import ProfileRecommendations from './Components/profileRecommendations';
-import AIProfile from './Components/AIProfile';
+import AIProfile from './AIProfile';
+import PrivateRoute from './Components/PrivateRoute';
+import Login from './Components/Login';
 
 function App() {
   return (
     <Router>
       <Layout>
-        {/* Navigation bar */}
+        
 
 
         {/* Route definitions */}
@@ -31,7 +33,11 @@ function App() {
           <Route path="/professionalize" element={<Professionalize />} />
           <Route path="/success" element={<Success />} />
           <Route path="/perfilamiento-inteligente-firestore" element={<ProfileRecommendations />} /> 
-          <Route path="/ai-profile" element={<AIProfile userId="STEPS_User1" />} />
+          <Route path="/ai-profile" element={
+            <PrivateRoute>
+              <AIProfile />
+            </PrivateRoute>} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Layout>
     </Router>

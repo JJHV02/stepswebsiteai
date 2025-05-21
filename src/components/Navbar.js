@@ -9,11 +9,10 @@ const Navbar = () => (
     <Link to="/excel">Excel</Link>
     <Link to="/professionalize">Professionalize</Link>
     <Link to="/success">Success</Link>
-<li>
-  <Link to="/perfilamiento-inteligente-firestore" className="text-blue-600 hover:underline">
+    <Link to="/perfilamiento-inteligente-firestore" className="text-blue-600 hover:underline">
     Perfilamiento Inteligente Firestore
-  </Link>
-</li>    <Link to="/AIProfile">AI Profile</Link>
+    </Link>
+    <Link to="/ai-profile">AI Profile</Link>
   </nav>
 );
 
