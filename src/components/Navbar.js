@@ -9,13 +9,12 @@ const Navbar = () => (
     <Link to="/excel">Excel</Link>
     <Link to="/professionalize">Professionalize</Link>
     <Link to="/success">Success</Link>
-    <Link to="/Perfilamiento Inteligente con Firestore">Perfilamiento Inteligente con Firestore</Link>
-    <Link to="/AIProfile">AI Profile</Link>
+<li>
+  <Link to="/perfilamiento-inteligente-firestore" className="text-blue-600 hover:underline">
+    Perfilamiento Inteligente Firestore
+  </Link>
+</li>    <Link to="/AIProfile">AI Profile</Link>
   </nav>
 );
 
 export default Navbar;
-
-// src/styles/navbar.css
-
-

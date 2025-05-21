@@ -1,62 +1,42 @@
-// src/components/AIProfile.js
-import React, { useEffect, useState } from "react";
-import { supabase } from "./src/firebase.js";
-import { auth } from "./supabase/firebase.js";
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
-const AIProfile = () => {
-  const [summary, setSummary] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+// Layout
+import Layout from './Components/Layout';
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const user = auth.currentUser;
-        if (!user) {
-          setError("Usuario no autenticado.");
-          setLoading(false);
-          return;
-        }
+// Phases
+import Start from './phases/Start';
+import Transform from './phases/Transform';
+import Excel from './phases/Excel';
+import Professionalize from './phases/Professionalize';
+import Success from './phases/Success';
 
-        const uid = user.uid;
+// Components
+import ProfileRecommendations from './Components/profileRecommendations';
+import AIProfile from './Components/AIProfile';
 
-        const { data, error } = await supabase
-          .from("ai_profiles")
-          .select("perfil_ai")
-          .eq("firebase_uid", uid)
-          .single();
-
-        if (error) {
-          console.error("Error fetching profile:", error.message);
-          setError("No se encontró el perfil.");
-        } else {
-          setSummary(data?.perfil_ai?.summary || "Sin resumen aún.");
-        }
-      } catch (err) {
-        console.error("Error de red o inesperado:", err);
-        setError("Error de red o inesperado.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
+function App() {
   return (
-    <div style={{ padding: "1rem" }}>
-      <h2>Perfil generado por IA</h2>
-      {loading ? (
-        <p>Cargando… perfil</p>
-      ) : error ? (
-        <p style={{ color: "red" }}>{error}</p>
-      ) : (
-        <p>{summary}</p>
-      )}
-    </div>
+    <Router>
+      <Layout>
+        {/* Navigation bar */}
+
+
+        {/* Route definitions */}
+        <Routes>
+          <Route path="/" element={<Start />} />
+          <Route path="/transform" element={<Transform />} />
+          <Route path="/excel" element={<Excel />} />
+          <Route path="/professionalize" element={<Professionalize />} />
+          <Route path="/success" element={<Success />} />
+          <Route path="/perfilamiento-inteligente-firestore" element={<ProfileRecommendations />} /> 
+          <Route path="/ai-profile" element={<AIProfile userId="STEPS_User1" />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
-};
+}
 
-export default AIProfile;
+export default App;
 
-// src/components/AIProfile.js

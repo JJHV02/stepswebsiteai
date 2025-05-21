@@ -1,25 +1,25 @@
-// src/components/AIProfile.js
+// Firebase Functions para la API de OpenAI
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabase/supabaseClient";
+import { supabase } from "../supabaseClient";
 import { auth } from "../supabase/firebase";
 
 const AIProfile = () => {
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const user = auth.currentUser;
         if (!user) {
-          navigate("/Login"); // Redirige si no hay sesión
+          setError("Usuario no autenticado.");
+          setLoading(false);
           return;
         }
 
         const uid = user.uid;
+
         const { data, error } = await supabase
           .from("ai_profiles")
           .select("perfil_ai")
@@ -28,32 +28,33 @@ const AIProfile = () => {
 
         if (error) {
           console.error("Error fetching profile:", error.message);
-          setError("No se encontró el perfil del usuario.");
+          setError("No se encontró el perfil.");
         } else {
           setSummary(data?.perfil_ai?.summary || "Sin resumen aún.");
         }
       } catch (err) {
-        console.error("Error inesperado:", err);
-        setError("Error inesperado al cargar el perfil.");
+        console.error("Error de red o inesperado:", err);
+        setError("Error de red o inesperado.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, [navigate]);
-
-  if (loading) return <p>Cargando… perfil</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  }, []);
 
   return (
     <div style={{ padding: "1rem" }}>
       <h2>Perfil generado por IA</h2>
-      <p>{summary}</p>
+      {loading ? (
+        <p>Cargando… perfil</p>
+      ) : error ? (
+        <p style={{ color: "red" }}>{error}</p>
+      ) : (
+        <p>{summary}</p>
+      )}
     </div>
   );
 };
 
 export default AIProfile;
-
-// src/components/AIProfile.js
