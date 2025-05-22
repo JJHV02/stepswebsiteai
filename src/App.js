@@ -1,4 +1,3 @@
-// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -14,10 +13,10 @@ import Success from "./phases/Success";
 
 // Components
 import ProfileRecommendations from "./Components/profileRecommendations";
-import AIProfile from "./Components/AIProfile";
-import PrivateRoute from "./Components/PrivateRoute";
-import Login from "./Components/Login";
-import CompleteProfile from "./Components/CompleteProfile"; // Importa aquí
+import AIProfile             from "./Components/AIProfile";
+import PrivateRoute          from "./Components/PrivateRoute";
+import Login                 from "./Components/Login";
+import CompleteProfile       from "./Components/CompleteProfile";
 
 function App() {
   return (
@@ -29,24 +28,29 @@ function App() {
           <Route path="/excel" element={<Excel />} />
           <Route path="/professionalize" element={<Professionalize />} />
           <Route path="/success" element={<Success />} />
-          <Route path="/perfilamiento-inteligente-firestore" element={<ProfileRecommendations />} />
+
+          <Route
+            path="/perfilamiento-inteligente-firestore"
+            element={<ProfileRecommendations />}
+          />
+
+          <Route path="/login" element={<Login />} />
+
+          <Route
+            path="/complete-profile"
+            element={
+              <PrivateRoute>
+                <CompleteProfile />
+              </PrivateRoute>
+            }
+          />
+
           <Route
             path="/ai-profile"
             element={
               <PrivateRoute>
                 <AIProfile />
               </PrivateRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-
-          {/* Ruta para completar perfil */}
-          <Route
-            path="/complete-profile"
-            element={
-              <PrivateRoute>
-                <CompleteProfile />
-              </PrivateRoute  >
             }
           />
         </Routes>

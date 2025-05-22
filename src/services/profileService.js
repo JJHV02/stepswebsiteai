@@ -1,6 +1,7 @@
 // src/services/profileService.js
+
+import { db } from "../firebase";               // Ajusta ruta según tu proyecto
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
 
 /**
  * Convierte un string CSV en array, descartando "NA" o vacíos.
@@ -19,11 +20,11 @@ function parseCsvField(field) {
 function analyzeOneProfile(data) {
   const suggestions = [];
 
-  const certs = parseCsvField(data.Certifications);
-  const projects = parseCsvField(data.Projects);
-  const clubs = parseCsvField(data["Student_Groups/Clubs"]);
+  const certs     = parseCsvField(data.Certifications);
+  const projects  = parseCsvField(data.Projects);
+  const clubs     = parseCsvField(data["Student_Groups/Clubs"]);
   const studyArea = (data["Study Area"] || "").toLowerCase();
-  const career = (data.Career || "").toLowerCase();
+  const career    = (data.Career || "").toLowerCase();
 
   // 1) Cloud Engineer
   if (
@@ -77,21 +78,27 @@ function analyzeOneProfile(data) {
 }
 
 /**
- * Lee todos los perfiles de la colección `users`,
- * les aplica `analyzeOneProfile` y devuelve un array de resultados.
+ * Lee todos los documentos de la colección "users" en Firestore,
+ * les aplica `analyzeOneProfile` y devuelve el array que espera tu componente.
  */
 export async function fetchAndAnalyzeProfiles() {
   const snap = await getDocs(collection(db, "users"));
-  console.log(`🔍 perfiles encontrados: ${snap.size}`);
+  console.log("🔥 Firestore docs:", snap.size);
+
+  if (snap.empty) {
+    return [];
+  }
+
   const results = snap.docs.map((doc) => {
     const data = doc.data();
     return {
       nombre: data.userName || data.Nombre || "Usuario",
+      career: data.Career || data.carrera || "N/A",
       yearGraduated: data.yearGraduated || data.anioEgreso || "N/A",
-      career: data.Career || "N/A",
       suggestions: analyzeOneProfile(data),
     };
   });
+
   console.log("🔍 resultados procesados:", results);
   return results;
 }

@@ -1,12 +1,11 @@
-// src/components/ProfileRecommendations.js
 import React, { useEffect, useState } from "react";
 import { fetchAndAnalyzeProfiles } from "../services/profileService";
 import "../styles/phase.css";
 
-
 export default function ProfileRecommendations() {
   const [profiles, setProfiles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null); // Estado para errores
 
   useEffect(() => {
     (async () => {
@@ -16,6 +15,7 @@ export default function ProfileRecommendations() {
         setProfiles(results);
       } catch (err) {
         console.error("❌ error al cargar perfiles:", err);
+        setError("Hubo un problema al cargar los perfiles. Intenta más tarde.");
       } finally {
         setLoading(false);
       }
@@ -35,7 +35,13 @@ export default function ProfileRecommendations() {
     <section className="phase">
       <h1>Perfilamiento con IA</h1>
 
-      {profiles.length === 0 ? (
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+        </div>
+      )}
+
+      {!error && profiles.length === 0 ? (
         <p>No hay perfiles disponibles.</p>
       ) : (
         profiles.map((p, idx) => (
@@ -60,5 +66,3 @@ export default function ProfileRecommendations() {
     </section>
   );
 }
-
-// src/components/ProfileRecommendations.js

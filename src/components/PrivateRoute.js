@@ -1,31 +1,41 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation }      from "react-router-dom";
+import { supabase }                   from "../lib/supabaseClient";
 
 const PrivateRoute = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
-  const [redirectToComplete, setRedirectToComplete] = useState(false);
+  const [loading, setLoading]         = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasProfile, setHasProfile]   = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuthAndProfile = async () => {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError || !user) {
-        setAuthorized(false);
+      // 1) Checa sesión
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        setIsAuthenticated(false);
         setLoading(false);
         return;
       }
-      const { data: profile, error: profileError } = await supabase
+      setIsAuthenticated(true);
+
+      // 2) Checa perfil en ai_profiles
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: profileData, error: profileError } = await supabase
         .from("ai_profiles")
         .select("id")
         .eq("supabase_uid", user.id)
         .single();
 
-      if (profileError || !profile) {
-        setRedirectToComplete(true);
+      if (profileError && profileError.code === "PGRST116") {
+        setHasProfile(false);
+      } else if (profileError) {
+        console.error("Error al consultar perfil:", profileError);
+        setHasProfile(false);
       } else {
-        setAuthorized(true);
+        setHasProfile(true);
       }
+
       setLoading(false);
     };
 
@@ -36,11 +46,12 @@ const PrivateRoute = ({ children }) => {
     return <p>Cargando...</p>;
   }
 
-  if (!authorized) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (redirectToComplete) {
+  // Si intenta ver AIProfile sin perfil, redirige a completar
+  if (location.pathname === "/ai-profile" && hasProfile === false) {
     return <Navigate to="/complete-profile" replace />;
   }
 

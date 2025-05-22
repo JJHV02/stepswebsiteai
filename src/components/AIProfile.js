@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabaseClient";
 const AIProfile = () => {
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError]     = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -24,7 +24,11 @@ const AIProfile = () => {
       if (dbErr) {
         setError("No se encontró el perfil.");
       } else {
-        setSummary(data?.perfil_ai || "Sin resumen aún.");
+        setSummary(
+          typeof data.perfil_ai === "object"
+            ? JSON.stringify(data.perfil_ai, null, 2)
+            : data.perfil_ai || "Sin resumen aún."
+        );
       }
       setLoading(false);
     };
@@ -40,7 +44,7 @@ const AIProfile = () => {
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
-        <p className="whitespace-pre-wrap">{summary}</p>
+        <pre className="whitespace-pre-wrap bg-gray-100 p-2 rounded">{summary}</pre>
       )}
     </div>
   );
