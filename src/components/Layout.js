@@ -3,8 +3,6 @@ import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 // En cualquier componente React, por ejemplo HomePage.js
-import { supabase } from './supabaseClient'; // Ajusta la ruta si es necesario
-
 
 
 const Layout = ({ children }) => (

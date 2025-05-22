@@ -1,6 +1,6 @@
 // src/components/AIProfile.js
 import React, { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 
 const AIProfile = () => {
   const [summary, setSummary] = useState("");

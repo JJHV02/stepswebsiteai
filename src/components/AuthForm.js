@@ -1,52 +1,55 @@
 import React, { useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "./supabaseClient";
 import { useNavigate } from "react-router-dom";
 
-
-export default function Login() {
-  const [email, setEmail]       = useState("");
+const AuthForm = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isNewUser, setIsNewUser] = useState(false);
-  const [error, setError]       = useState("");
-  const [loading, setLoading]   = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    if (!validateEmail(email)) {
+      setError("Correo electrónico inválido.");
+      setLoading(false);
+      return;
+    }
+
     try {
       let result;
       if (isNewUser) {
-        // Registro de usuario
         result = await supabase.auth.signUp({ email, password });
         if (result.error) throw result.error;
-        // Opcional: notificar al usuario que revise su correo
-        setLoading(false);
-        return;
+        alert("✅ Registro exitoso. Verifica tu correo.");
+      } else {
+        result = await supabase.auth.signInWithPassword({ email, password });
+        if (result.error) throw result.error;
+        console.log("✅ Login exitoso:", result.data.user);
+        navigate("/ai-profile");
       }
-
-      // Login de usuario
-      result = await supabase.auth.signInWithPassword({ email, password });
-      if (result.error) throw result.error;
-
-      // Si llegó aquí, autenticación exitosa
-      console.log("✅ Usuario logueado:", result.data.user);
-
-      // Redirige a la página protegida /ai-profile
-      navigate("/ai-profile");
     } catch (err) {
-      setError(err.message);
+      console.error("❌ Error:", err);
+      setError(err.message || "Ocurrió un error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-2xl mb-4">
-        {isNewUser ? "Registrar usuario" : "Iniciar sesión"}
+    <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
+      <h2 className="text-2xl font-bold mb-4">
+        {isNewUser ? "Registrar Usuario" : "Iniciar Sesión"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,8 +78,8 @@ export default function Login() {
         >
           {loading
             ? isNewUser
-              ? "Registrando…"
-              : "Entrando…"
+              ? "Registrando..."
+              : "Entrando..."
             : isNewUser
             ? "Registrar"
             : "Entrar"}
@@ -98,4 +101,6 @@ export default function Login() {
       {error && <p className="mt-2 text-red-500">{error}</p>}
     </div>
   );
-}
+};
+
+export default AuthForm;
