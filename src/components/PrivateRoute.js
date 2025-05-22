@@ -1,42 +1,50 @@
-// src/components/PrivateRoute.js
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { Navigate } from "react-router-dom";
 
 const PrivateRoute = ({ children }) => {
-  // undefined = checking auth, null = no session, object = session present
-  const [session, setSession] = useState(undefined);
+  const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
+  const [redirectToComplete, setRedirectToComplete] = useState(false);
 
   useEffect(() => {
-    // 1) initial session fetch
-    supabase.auth.getSession().then(({ data, error }) => {
-      console.log("getSession →", data, error);
-      setSession(data.session);
-    });
-
-    // 2) listen for changes
-    const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      console.log("onAuthStateChange →", newSession);
-      setSession(newSession);
-    });
-
-    // 3) cleanup
-    return () => {
-      if (data?.subscription) {
-        data.subscription.unsubscribe();
+    const checkAuthAndProfile = async () => {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        setAuthorized(false);
+        setLoading(false);
+        return;
       }
+      const { data: profile, error: profileError } = await supabase
+        .from("ai_profiles")
+        .select("id")
+        .eq("supabase_uid", user.id)
+        .single();
+
+      if (profileError || !profile) {
+        setRedirectToComplete(true);
+      } else {
+        setAuthorized(true);
+      }
+      setLoading(false);
     };
+
+    checkAuthAndProfile();
   }, []);
 
-  if (session === undefined) {
-    return <p>Cargando autenticación…</p>;
+  if (loading) {
+    return <p>Cargando...</p>;
   }
 
-  if (!session) {
+  if (!authorized) {
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  if (redirectToComplete) {
+    return <Navigate to="/complete-profile" replace />;
+  }
+
+  return children;
 };
 
 export default PrivateRoute;

@@ -1,4 +1,3 @@
-// src/components/AIProfile.js
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
@@ -9,7 +8,6 @@ const AIProfile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      // 1) Get the current user from Supabase auth
       const { data: { user }, error: authErr } = await supabase.auth.getUser();
       if (authErr || !user) {
         setError("Usuario no autenticado.");
@@ -17,7 +15,6 @@ const AIProfile = () => {
         return;
       }
 
-      // 2) Query the `ai_profiles` table
       const { data, error: dbErr } = await supabase
         .from("ai_profiles")
         .select("perfil_ai")
@@ -25,10 +22,8 @@ const AIProfile = () => {
         .single();
 
       if (dbErr) {
-        console.error("Error fetching profile:", dbErr);
         setError("No se encontró el perfil.");
       } else {
-        // Assume `perfil_ai` is a text column with the summary
         setSummary(data?.perfil_ai || "Sin resumen aún.");
       }
       setLoading(false);
